@@ -1,7 +1,6 @@
 """
 每天自动抓取六大银行 A股 + H股 当日最低价
 数据源：A股 → 新浪财经，H股 → Yahoo Finance
-运行时机：GitHub Actions 每个交易日收盘后（北京时间 16:00）
 """
 
 import json
@@ -9,9 +8,7 @@ import os
 import time
 from datetime import datetime, timezone, timedelta
 import urllib.request
-import urllib.error
 
-# ── 配置 ────────────────────────────────────────────────────────
 BANKS = {
     "icbc":  {"name": "工商银行", "ticker_a": "sh601398", "ticker_h": "1398.HK"},
     "ccb":   {"name": "建设银行", "ticker_a": "sh601939", "ticker_h": "939.HK"},
@@ -36,22 +33,15 @@ def fetch_url(url, headers=None, timeout=10):
         print(f"  ✗ 请求失败: {url} — {e}")
         return None
 
-# ── A股最低价（新浪财经）────────────────────────────────────────
 def fetch_a_prices():
     tickers = ",".join(b["ticker_a"] for b in BANKS.values())
     url = f"https://hq.sinajs.cn/list={tickers}"
-    headers = {
-        "Referer": "https://finance.sina.com.cn",
-        "User-Agent": "Mozilla/5.0"
-    }
+    headers = {"Referer": "https://finance.sina.com.cn", "User-Agent": "Mozilla/5.0"}
     text = fetch_url(url, headers)
     if not text:
         return {}
-
     result = {}
     for key, bank in BANKS.items():
-        # 新浪返回格式: var hq_str_sh601398="工商银行,开,收,现价,最高,最低,..."
-        # 字段索引: 0=名称,1=今开,2=昨收,3=现价,4=最高,5=最低
         marker = f'hq_str_{bank["ticker_a"]}="'
         idx = text.find(marker)
         if idx == -1:
@@ -71,9 +61,8 @@ def fetch_a_prices():
             print(f"  ✗ {bank['name']} A股数据解析失败")
     return result
 
-# ── H股最低价（Yahoo Finance）────────────────────────────────────
 def fetch_h_price(key, bank):
-    ticker = bank["ticker_h"].replace(".", "-")  # Yahoo用连字符
+    ticker = bank["ticker_h"].replace(".", "-")
     url = f"https://query1.finance.yahoo.com/v8/finance/chart/{ticker}?interval=1d&range=1d"
     headers = {"User-Agent": "Mozilla/5.0"}
     text = fetch_url(url, headers)
@@ -82,7 +71,6 @@ def fetch_h_price(key, bank):
     try:
         data = json.loads(text)
         result = data["chart"]["result"][0]
-        # 取当日最低价
         low = result["indicators"]["quote"][0]["low"][0]
         if low and low > 0:
             print(f"  ✓ {bank['name']} H股最低价: HK${low:.2f}")
@@ -91,42 +79,50 @@ def fetch_h_price(key, bank):
         print(f"  ✗ {bank['name']} H股数据解析失败: {e}")
     return None
 
-# ── 主逻辑 ────────────────────────────────────────────────────────
+def load_db():
+    """读取数据库，空文件或不存在都返回初始结构"""
+    default = {
+        "meta": {
+            "description": "六大国有银行每日最低价",
+            "source": "新浪财经 + Yahoo Finance"
+        },
+        "prices": {key: {} for key in BANKS}
+    }
+    if not os.path.exists(PRICES_FILE):
+        return default
+    try:
+        with open(PRICES_FILE, "r", encoding="utf-8") as f:
+            content = f.read().strip()
+            if not content:          # 空文件
+                return default
+            return json.loads(content)
+    except json.JSONDecodeError:     # 格式损坏
+        print("  ⚠ prices.json 格式异常，重新初始化")
+        return default
+
 def main():
     today = today_str()
     print(f"\n{'='*50}")
     print(f"  抓取日期: {today}")
     print(f"{'='*50}")
 
-    # 读取已有数据
-    if os.path.exists(PRICES_FILE):
-        with open(PRICES_FILE, "r", encoding="utf-8") as f:
-            db = json.load(f)
-    else:
-        db = {
-            "meta": {"description": "六大国有银行每日最低价", "source": "新浪财经 + Yahoo Finance"},
-            "prices": {key: {} for key in BANKS}
-        }
+    db = load_db()
 
-    # 确保所有银行key都存在
     for key in BANKS:
         if key not in db["prices"]:
             db["prices"][key] = {}
 
-    # 抓 A股
     print("\n[A股] 新浪财经...")
     a_prices = fetch_a_prices()
 
-    # 抓 H股
     print("\n[H股] Yahoo Finance...")
     h_prices = {}
     for key, bank in BANKS.items():
         price = fetch_h_price(key, bank)
         if price:
             h_prices[key] = price
-        time.sleep(0.5)  # 避免频率过高
+        time.sleep(0.5)
 
-    # 写入数据库
     updated = 0
     for key in BANKS:
         entry = {}
