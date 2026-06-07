@@ -10,136 +10,599 @@
         "h_low": 6.71
       },
       "2016-annual": {
-        "a_low": 0.88,
-        "h_low": 0.301
+        "a_low": 4.24,
+        "h_low": 4.03
       },
       "2015-annual": {
         "a_low": 0.8,
         "h_low": 0.881
       },
       "2022-annual": {
-        "a_low": 2.78,
-        "h_low": 2.009
+        "a_low": 4.01,
+        "h_low": 3.36
       },
       "2024-annual": {
-        "a_low": 3.8,
-        "h_low": 2.488
+        "a_low": 4.72,
+        "h_low": 3.51
       },
       "2025-annual": {
-        "a_low": 5.93,
-        "h_low": 4.219
+        "a_low": 6.4,
+        "h_low": 4.75
       },
       "2020-annual": {
-        "a_low": 2.88,
-        "h_low": 1.946
+        "a_low": 4.88,
+        "h_low": 3.96
       },
       "2021-annual": {
-        "a_low": 2.99,
-        "h_low": 2.386
+        "a_low": 4.51,
+        "h_low": 4.08
       },
       "2018-annual": {
-        "a_low": 2.51,
-        "h_low": 2.514
+        "a_low": 5.05,
+        "h_low": 5.1
       },
       "2023-annual": {
-        "a_low": 3.05,
-        "h_low": 2.328
+        "a_low": 4.28,
+        "h_low": 3.35
       },
       "2019-annual": {
-        "a_low": 2.85,
-        "h_low": 2.509
+        "a_low": 5.15,
+        "h_low": 4.81
       },
       "2026-annual": {
-        "a_low": 6.68,
-        "h_low": 5.846
+        "a_low": 6.85,
+        "h_low": 6.04
       },
       "2017-annual": {
-        "a_low": 1.61,
-        "h_low": 1.456
+        "a_low": 4.39,
+        "h_low": 4.6
       }
     },
     "ccb": {
       "2026-06-07": {
         "a_low": 10.05,
         "h_low": 8.51
+      },
+      "2019-annual": {
+        "a_low": 6.21
+      },
+      "2023-annual": {
+        "a_low": 5.56
+      },
+      "2020-annual": {
+        "a_low": 6.04
+      },
+      "2018-annual": {
+        "a_low": 6.15
+      },
+      "2021-annual": {
+        "a_low": 5.64
+      },
+      "2022-annual": {
+        "a_low": 5.18
+      },
+      "2026-annual": {
+        "a_low": 8.52
+      },
+      "2016-annual": {
+        "a_low": 4.71
+      },
+      "2017-annual": {
+        "a_low": 5.42
+      },
+      "2024-annual": {
+        "a_low": 6.35
+      },
+      "2025-annual": {
+        "a_low": 8.14
       }
     },
     "abc": {
       "2026-06-07": {
         "a_low": 6.31,
         "h_low": 5.8
+      },
+      "2019-annual": {
+        "a_low": 3.38,
+        "h_low": 2.93
+      },
+      "2023-annual": {
+        "a_low": 2.89,
+        "h_low": 2.5
+      },
+      "2020-annual": {
+        "a_low": 3.12,
+        "h_low": 2.38
+      },
+      "2018-annual": {
+        "a_low": 3.25,
+        "h_low": 3.33
+      },
+      "2021-annual": {
+        "a_low": 2.9,
+        "h_low": 2.54
+      },
+      "2022-annual": {
+        "a_low": 2.7,
+        "h_low": 2.2
+      },
+      "2026-annual": {
+        "a_low": 6.14,
+        "h_low": 5.08
+      },
+      "2016-annual": {
+        "a_low": 3.07,
+        "h_low": 2.75
+      },
+      "2017-annual": {
+        "a_low": 3.09,
+        "h_low": 3.15
+      },
+      "2024-annual": {
+        "a_low": 3.58,
+        "h_low": 2.79
+      },
+      "2025-annual": {
+        "a_low": 4.9,
+        "h_low": 4.09
       }
     },
     "boc": {
       "2026-06-07": {
         "a_low": 5.9,
         "h_low": 5.25
+      },
+      "2019-annual": {
+        "a_low": 3.49,
+        "h_low": 2.91
+      },
+      "2023-annual": {
+        "a_low": 3.15,
+        "h_low": 2.6
+      },
+      "2020-annual": {
+        "a_low": 3.16,
+        "h_low": 2.33
+      },
+      "2018-annual": {
+        "a_low": 3.42,
+        "h_low": 3.2
+      },
+      "2021-annual": {
+        "a_low": 2.96,
+        "h_low": 2.59
+      },
+      "2022-annual": {
+        "a_low": 2.99,
+        "h_low": 2.51
+      },
+      "2026-annual": {
+        "a_low": 5.23,
+        "h_low": 4.35
+      },
+      "2016-annual": {
+        "a_low": 3.13,
+        "h_low": 2.9
+      },
+      "2017-annual": {
+        "a_low": 3.42,
+        "h_low": 3.4
+      },
+      "2024-annual": {
+        "a_low": 3.89,
+        "h_low": 2.79
+      },
+      "2025-annual": {
+        "a_low": 5.13,
+        "h_low": 3.68
       }
     },
     "comm": {
       "2026-06-07": {
         "a_low": 6.73,
         "h_low": 7.36
+      },
+      "2019-annual": {
+        "a_low": 5.4,
+        "h_low": 4.98
+      },
+      "2023-annual": {
+        "a_low": 4.71,
+        "h_low": 4.23
+      },
+      "2020-annual": {
+        "a_low": 4.43,
+        "h_low": 3.66
+      },
+      "2018-annual": {
+        "a_low": 5.39,
+        "h_low": 5.33
+      },
+      "2021-annual": {
+        "a_low": 4.25,
+        "h_low": 4.03
+      },
+      "2022-annual": {
+        "a_low": 4.44,
+        "h_low": 3.83
+      },
+      "2026-annual": {
+        "a_low": 6.48,
+        "h_low": 6.37
+      },
+      "2016-annual": {
+        "a_low": 5.45,
+        "h_low": 4.76
+      },
+      "2017-annual": {
+        "a_low": 5.75,
+        "h_low": 5.47
+      },
+      "2024-annual": {
+        "a_low": 5.62,
+        "h_low": 4.31
+      },
+      "2025-annual": {
+        "a_low": 6.65,
+        "h_low": 5.91
       }
     },
     "psbc": {
       "2026-06-07": {
         "a_low": 4.92,
         "h_low": 5
+      },
+      "2019-annual": {
+        "a_low": 5.53,
+        "h_low": 4.12
+      },
+      "2023-annual": {
+        "a_low": 4.21,
+        "h_low": 3.42
+      },
+      "2020-annual": {
+        "a_low": 4.47,
+        "h_low": 3.02
+      },
+      "2021-annual": {
+        "a_low": 4.59,
+        "h_low": 4.27
+      },
+      "2018-annual": {
+        "h_low": 4.05
+      },
+      "2022-annual": {
+        "a_low": 3.84,
+        "h_low": 3.58
+      },
+      "2016-annual": {
+        "h_low": 4.11
+      },
+      "2026-annual": {
+        "a_low": 4.87,
+        "h_low": 4.78
+      },
+      "2024-annual": {
+        "a_low": 4.29,
+        "h_low": 3.35
+      },
+      "2017-annual": {
+        "h_low": 4.03
+      },
+      "2025-annual": {
+        "a_low": 4.94,
+        "h_low": 4.34
       }
     },
     "petrochina": {
       "2026-06-07": {
         "a_low": 10.55,
         "h_low": 10.45
+      },
+      "2019-annual": {
+        "a_low": 5.49
+      },
+      "2023-annual": {
+        "a_low": 4.95
+      },
+      "2020-annual": {
+        "a_low": 4.04
+      },
+      "2018-annual": {
+        "a_low": 7.14
+      },
+      "2021-annual": {
+        "a_low": 4.05
+      },
+      "2022-annual": {
+        "a_low": 4.76
+      },
+      "2026-annual": {
+        "a_low": 9.71
+      },
+      "2016-annual": {
+        "a_low": 7.08
+      },
+      "2017-annual": {
+        "a_low": 7.39
+      },
+      "2024-annual": {
+        "a_low": 6.86
+      },
+      "2025-annual": {
+        "a_low": 7.33
       }
     },
     "sinopec": {
       "2026-06-07": {
         "a_low": 4.81,
         "h_low": 4.29
+      },
+      "2019-annual": {
+        "a_low": 4.84
+      },
+      "2023-annual": {
+        "a_low": 4.34
+      },
+      "2020-annual": {
+        "a_low": 3.85
+      },
+      "2018-annual": {
+        "a_low": 4.99
+      },
+      "2021-annual": {
+        "a_low": 3.91
+      },
+      "2022-annual": {
+        "a_low": 3.96
+      },
+      "2026-annual": {
+        "a_low": 4.73
+      },
+      "2016-annual": {
+        "a_low": 4.53
+      },
+      "2017-annual": {
+        "a_low": 5.4
+      },
+      "2024-annual": {
+        "a_low": 5.15
+      },
+      "2025-annual": {
+        "a_low": 5.25
       }
     },
     "cnooc": {
       "2026-06-07": {
         "a_low": 34.81,
         "h_low": 26.62
+      },
+      "2023-annual": {
+        "a_low": 15.12
+      },
+      "2022-annual": {
+        "a_low": 12.96
+      },
+      "2026-annual": {
+        "a_low": 28.29
+      },
+      "2024-annual": {
+        "a_low": 19.88
+      },
+      "2025-annual": {
+        "a_low": 23.11
       }
     },
     "cmobile": {
       "2026-06-07": {
         "a_low": 97,
         "h_low": 81.9
+      },
+      "2023-annual": {
+        "a_low": 67.5
+      },
+      "2022-annual": {
+        "a_low": 57.58
+      },
+      "2026-annual": {
+        "a_low": 91.51
+      },
+      "2024-annual": {
+        "a_low": 93.69
+      },
+      "2025-annual": {
+        "a_low": 100.1
       }
     },
     "cunicom": {
       "2026-06-07": {
         "a_low": 4.29,
         "h_low": 7.35
+      },
+      "2019-annual": {
+        "a_low": 5.06
+      },
+      "2023-annual": {
+        "a_low": 4.18
+      },
+      "2020-annual": {
+        "a_low": 4.43
+      },
+      "2018-annual": {
+        "a_low": 4.63
+      },
+      "2021-annual": {
+        "a_low": 3.85
+      },
+      "2022-annual": {
+        "a_low": 3.3
+      },
+      "2026-annual": {
+        "a_low": 4.29
+      },
+      "2016-annual": {
+        "a_low": 3.75
+      },
+      "2017-annual": {
+        "a_low": 6.15
+      },
+      "2024-annual": {
+        "a_low": 3.9
+      },
+      "2025-annual": {
+        "a_low": 4.7
       }
     },
     "ctelecom": {
       "2026-06-07": {
         "a_low": 6.02,
         "h_low": 4.99
+      },
+      "2023-annual": {
+        "a_low": 4.15
+      },
+      "2021-annual": {
+        "a_low": 4.13
+      },
+      "2022-annual": {
+        "a_low": 3.65
+      },
+      "2026-annual": {
+        "a_low": 5.59
+      },
+      "2024-annual": {
+        "a_low": 5.03
+      },
+      "2025-annual": {
+        "a_low": 6.22
       }
     },
     "huaneng": {
       "2026-06-07": {
         "a_low": 8.28,
         "h_low": 7
+      },
+      "2019-annual": {
+        "a_low": 5.4
+      },
+      "2023-annual": {
+        "a_low": 6.88
+      },
+      "2020-annual": {
+        "a_low": 4.06
+      },
+      "2018-annual": {
+        "a_low": 5.78
+      },
+      "2021-annual": {
+        "a_low": 3.74
+      },
+      "2022-annual": {
+        "a_low": 5.84
+      },
+      "2026-annual": {
+        "a_low": 6.66
+      },
+      "2016-annual": {
+        "a_low": 6.99
+      },
+      "2017-annual": {
+        "a_low": 6.1
+      },
+      "2024-annual": {
+        "a_low": 6.35
+      },
+      "2025-annual": {
+        "a_low": 6.15
       }
     },
     "datang": {
       "2026-06-07": {
         "a_low": 7.93,
         "h_low": 2.91
+      },
+      "2019-annual": {
+        "a_low": 2.36
+      },
+      "2023-annual": {
+        "a_low": 2.36
+      },
+      "2020-annual": {
+        "a_low": 1.93
+      },
+      "2018-annual": {
+        "a_low": 2.96
+      },
+      "2021-annual": {
+        "a_low": 2.19
+      },
+      "2022-annual": {
+        "a_low": 2.08
+      },
+      "2026-annual": {
+        "a_low": 3.5
+      },
+      "2016-annual": {
+        "a_low": 3.8
+      },
+      "2017-annual": {
+        "a_low": 3.71
+      },
+      "2024-annual": {
+        "a_low": 2.19
+      },
+      "2025-annual": {
+        "a_low": 2.58
       }
     },
     "huadian": {
       "2026-06-07": {
         "a_low": 5.18,
         "h_low": 4.48
+      },
+      "2019-annual": {
+        "a_low": 3.46,
+        "h_low": 2.72
+      },
+      "2023-annual": {
+        "a_low": 4.61,
+        "h_low": 2.81
+      },
+      "2020-annual": {
+        "a_low": 3,
+        "h_low": 1.85
+      },
+      "2018-annual": {
+        "a_low": 3.38,
+        "h_low": 2.55
+      },
+      "2021-annual": {
+        "a_low": 3.01,
+        "h_low": 1.93
+      },
+      "2022-annual": {
+        "a_low": 3.27,
+        "h_low": 2.22
+      },
+      "2026-annual": {
+        "a_low": 4.5,
+        "h_low": 3.95
+      },
+      "2016-annual": {
+        "a_low": 4.9,
+        "h_low": 3.06
+      },
+      "2017-annual": {
+        "a_low": 3.67,
+        "h_low": 2.78
+      },
+      "2024-annual": {
+        "a_low": 4.89,
+        "h_low": 3.26
+      },
+      "2025-annual": {
+        "a_low": 4.86,
+        "h_low": 3.55
       }
     }
   }
