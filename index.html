@@ -1,0 +1,1039 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>红利股猎人 · 中国高股息股票买入分析系统</title>
+<link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=DM+Mono:wght@400;500&family=Noto+Sans+SC:wght@300;400;500;700&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.js"></script>
+<style>
+:root {
+  --ink: #1a1208;
+  --paper: #f5f0e8;
+  --cream: #ede7d5;
+  --gold: #b8860b;
+  --gold-light: #d4a832;
+  --gold-pale: #f5e6c0;
+  --green: #2d6a4f;
+  --green-light: #40916c;
+  --red: #9b2226;
+  --amber: #e76f51;
+  --text: #2c1810;
+  --text2: #6b5744;
+  --text3: #a08c78;
+  --border: #d4c4a8;
+  --border-light: #e8dcc8;
+  --mono: 'DM Mono', monospace;
+  --serif: 'Instrument Serif', serif;
+  --sans: 'Noto Sans SC', sans-serif;
+  --shadow: 0 2px 12px rgba(26,18,8,0.08);
+  --shadow-lg: 0 8px 32px rgba(26,18,8,0.12);
+}
+
+* { margin: 0; padding: 0; box-sizing: border-box; }
+
+body {
+  background: var(--paper);
+  color: var(--text);
+  font-family: var(--sans);
+  font-size: 14px;
+  line-height: 1.6;
+  min-height: 100vh;
+}
+
+/* Grain texture */
+body::before {
+  content: '';
+  position: fixed;
+  inset: 0;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.03'/%3E%3C/svg%3E");
+  pointer-events: none;
+  z-index: 1000;
+  opacity: 0.4;
+}
+
+.wrap { max-width: 1440px; margin: 0 auto; padding: 0 32px; }
+
+/* ── Header ── */
+header {
+  background: var(--ink);
+  color: var(--paper);
+  padding: 0;
+  position: relative;
+  overflow: hidden;
+}
+
+.header-inner {
+  display: flex;
+  align-items: stretch;
+  min-height: 120px;
+}
+
+.header-left {
+  flex: 1;
+  padding: 32px 40px;
+  border-right: 1px solid rgba(255,255,255,0.08);
+}
+
+.header-eyebrow {
+  font-family: var(--mono);
+  font-size: 10px;
+  letter-spacing: 3px;
+  text-transform: uppercase;
+  color: var(--gold-light);
+  margin-bottom: 10px;
+}
+
+.header-title {
+  font-family: var(--serif);
+  font-size: 36px;
+  font-weight: 400;
+  color: var(--paper);
+  line-height: 1.1;
+  letter-spacing: -0.5px;
+}
+
+.header-title em {
+  font-style: italic;
+  color: var(--gold-light);
+}
+
+.header-subtitle {
+  font-size: 12px;
+  color: rgba(245,240,232,0.5);
+  margin-top: 8px;
+  font-family: var(--mono);
+}
+
+.header-right {
+  display: flex;
+  align-items: center;
+  padding: 32px 40px;
+  gap: 40px;
+}
+
+.stat-block { text-align: center; }
+.stat-block .stat-n {
+  font-family: var(--mono);
+  font-size: 28px;
+  color: var(--gold-light);
+  display: block;
+  line-height: 1;
+}
+.stat-block .stat-l {
+  font-size: 11px;
+  color: rgba(245,240,232,0.4);
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  margin-top: 4px;
+}
+
+.header-decoration {
+  position: absolute;
+  right: 0; top: 0;
+  width: 300px; height: 100%;
+  background: linear-gradient(135deg, transparent 50%, rgba(184,134,11,0.05) 100%);
+  pointer-events: none;
+}
+
+/* ── Algorithm box ── */
+.algo-bar {
+  background: var(--cream);
+  border-bottom: 1px solid var(--border);
+  padding: 14px 0;
+}
+
+.algo-inner {
+  display: flex;
+  align-items: center;
+  gap: 32px;
+  flex-wrap: wrap;
+}
+
+.algo-label {
+  font-family: var(--mono);
+  font-size: 10px;
+  color: var(--gold);
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+
+.algo-steps {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.algo-step {
+  background: var(--paper);
+  border: 1px solid var(--border);
+  border-radius: 4px;
+  padding: 5px 10px;
+  font-family: var(--mono);
+  font-size: 11px;
+  color: var(--text2);
+  white-space: nowrap;
+}
+
+.algo-step strong {
+  color: var(--gold);
+  font-weight: 500;
+}
+
+.algo-arrow {
+  color: var(--text3);
+  font-size: 12px;
+}
+
+/* ── Sector tabs ── */
+.sector-nav {
+  padding: 24px 0 0;
+  border-bottom: 2px solid var(--border);
+  margin-bottom: 32px;
+}
+
+.sector-tabs {
+  display: flex;
+  gap: 0;
+}
+
+.sector-tab {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 14px 28px;
+  cursor: pointer;
+  border: 1px solid transparent;
+  border-bottom: none;
+  border-radius: 8px 8px 0 0;
+  font-size: 14px;
+  font-weight: 500;
+  color: var(--text2);
+  background: transparent;
+  transition: all 0.15s;
+  position: relative;
+  bottom: -2px;
+}
+
+.sector-tab:hover { color: var(--text); background: var(--cream); }
+
+.sector-tab.active {
+  color: var(--text);
+  background: var(--paper);
+  border-color: var(--border);
+  border-bottom-color: var(--paper);
+}
+
+.sector-tab .tab-icon { font-size: 16px; }
+.sector-tab .tab-count {
+  font-family: var(--mono);
+  font-size: 10px;
+  color: var(--text3);
+  background: var(--cream);
+  padding: 1px 6px;
+  border-radius: 10px;
+}
+.sector-tab.active .tab-count { background: var(--cream); }
+
+/* ── Stock grid ── */
+.stock-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(440px, 1fr));
+  gap: 24px;
+  margin-bottom: 48px;
+}
+
+.stock-card {
+  background: white;
+  border: 1px solid var(--border-light);
+  border-radius: 12px;
+  overflow: hidden;
+  box-shadow: var(--shadow);
+  transition: box-shadow 0.2s, transform 0.2s;
+}
+
+.stock-card:hover {
+  box-shadow: var(--shadow-lg);
+  transform: translateY(-2px);
+}
+
+.card-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 18px 20px 14px;
+  border-bottom: 1px solid var(--border-light);
+  background: var(--cream);
+}
+
+.card-name-block {}
+.card-name {
+  font-size: 16px;
+  font-weight: 700;
+  color: var(--ink);
+  letter-spacing: -0.3px;
+}
+.card-tickers {
+  font-family: var(--mono);
+  font-size: 10px;
+  color: var(--text3);
+  margin-top: 3px;
+  letter-spacing: 0.5px;
+}
+
+.verdict-badge {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 14px;
+  border-radius: 20px;
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 0.5px;
+}
+.verdict-badge.buy { background: #d4edda; color: var(--green); border: 1.5px solid var(--green-light); }
+.verdict-badge.wait { background: #fff3cd; color: #856404; border: 1.5px solid #d4a332; }
+.verdict-badge.avoid { background: #f8d7da; color: var(--red); border: 1.5px solid #f5c2c7; }
+.verdict-badge.nodata { background: var(--cream); color: var(--text3); border: 1.5px solid var(--border); }
+
+/* Buy price section */
+.buy-prices {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0;
+  border-bottom: 1px solid var(--border-light);
+}
+
+.buy-price-block {
+  padding: 16px 20px;
+  border-right: 1px solid var(--border-light);
+}
+.buy-price-block:last-child { border-right: none; }
+
+.bp-label {
+  font-size: 10px;
+  color: var(--text3);
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  margin-bottom: 4px;
+  font-family: var(--mono);
+}
+
+.bp-price {
+  font-family: var(--mono);
+  font-size: 24px;
+  font-weight: 500;
+  color: var(--gold);
+  letter-spacing: -0.5px;
+}
+
+.bp-price.na { color: var(--text3); font-size: 16px; }
+
+.bp-yield {
+  font-family: var(--mono);
+  font-size: 11px;
+  color: var(--text3);
+  margin-top: 2px;
+}
+
+.bp-yield strong { color: var(--green-light); }
+
+.bp-gap {
+  font-size: 11px;
+  margin-top: 6px;
+  padding: 3px 8px;
+  border-radius: 4px;
+  display: inline-block;
+  font-family: var(--mono);
+}
+.bp-gap.above { background: #f8d7da; color: var(--red); }
+.bp-gap.below { background: #d4edda; color: var(--green); }
+.bp-gap.near  { background: #fff3cd; color: #856404; }
+
+/* Chart area */
+.card-chart {
+  padding: 16px 20px;
+  border-bottom: 1px solid var(--border-light);
+}
+
+.chart-title {
+  font-size: 11px;
+  color: var(--text3);
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  font-family: var(--mono);
+  margin-bottom: 10px;
+}
+
+.chart-wrap { position: relative; height: 120px; }
+
+/* History table toggle */
+.card-toggle {
+  padding: 10px 20px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  cursor: pointer;
+  font-size: 12px;
+  color: var(--text3);
+  font-family: var(--mono);
+  user-select: none;
+  transition: color 0.15s;
+}
+.card-toggle:hover { color: var(--gold); }
+.toggle-arrow { transition: transform 0.2s; }
+.card-toggle.open .toggle-arrow { transform: rotate(180deg); }
+
+/* History table */
+.hist-table-wrap {
+  display: none;
+  overflow-x: auto;
+  border-top: 1px solid var(--border-light);
+}
+.hist-table-wrap.show { display: block; }
+
+.hist-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 11px;
+}
+
+.hist-table th {
+  background: var(--cream);
+  font-family: var(--mono);
+  font-size: 9px;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  color: var(--text3);
+  padding: 8px 10px;
+  text-align: right;
+  white-space: nowrap;
+  border-bottom: 1px solid var(--border);
+}
+.hist-table th:first-child { text-align: left; }
+
+.hist-table td {
+  padding: 7px 10px;
+  text-align: right;
+  font-family: var(--mono);
+  color: var(--text2);
+  border-bottom: 1px solid var(--border-light);
+}
+.hist-table td:first-child { text-align: left; font-weight: 500; color: var(--text); }
+
+.hist-table tr:last-child td { border-bottom: none; }
+.hist-table tr:hover td { background: var(--cream); }
+
+.top-year td { color: var(--gold) !important; background: #fffbf0 !important; }
+.top-year td:first-child::after { content: ' ★'; color: var(--gold-light); font-size: 10px; }
+
+.yield-hi { color: var(--green) !important; font-weight: 500; }
+.yield-mid { color: #856404 !important; }
+.ret-good { color: var(--green) !important; }
+.ret-ok { color: #856404 !important; }
+.ret-hold { color: var(--text3) !important; }
+
+/* Loading & error states */
+.loading-screen {
+  position: fixed;
+  inset: 0;
+  background: var(--paper);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  z-index: 9999;
+  transition: opacity 0.5s;
+}
+.loading-screen.fade { opacity: 0; pointer-events: none; }
+
+.loading-title {
+  font-family: var(--serif);
+  font-size: 32px;
+  color: var(--ink);
+  margin-bottom: 8px;
+}
+.loading-sub {
+  font-family: var(--mono);
+  font-size: 12px;
+  color: var(--text3);
+  margin-bottom: 32px;
+}
+.loading-bar {
+  width: 200px;
+  height: 2px;
+  background: var(--border);
+  border-radius: 1px;
+  overflow: hidden;
+}
+.loading-fill {
+  height: 100%;
+  background: var(--gold);
+  border-radius: 1px;
+  animation: loadFill 1.5s ease forwards;
+}
+@keyframes loadFill { from { width: 0; } to { width: 100%; } }
+
+/* Summary strip */
+.summary-strip {
+  display: flex;
+  gap: 0;
+  background: var(--ink);
+  border-radius: 10px;
+  overflow: hidden;
+  margin-bottom: 28px;
+}
+.ss-item {
+  flex: 1;
+  padding: 16px 20px;
+  border-right: 1px solid rgba(255,255,255,0.06);
+  text-align: center;
+}
+.ss-item:last-child { border-right: none; }
+.ss-label { font-family: var(--mono); font-size: 9px; color: rgba(245,240,232,0.4); letter-spacing: 1.5px; text-transform: uppercase; }
+.ss-value { font-family: var(--mono); font-size: 18px; color: var(--gold-light); margin-top: 4px; }
+.ss-sub { font-size: 10px; color: rgba(245,240,232,0.3); margin-top: 2px; }
+
+/* Update info */
+.update-bar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 8px 0 20px;
+  font-family: var(--mono);
+  font-size: 11px;
+  color: var(--text3);
+}
+
+footer {
+  border-top: 1px solid var(--border);
+  padding: 24px 0;
+  text-align: center;
+  font-size: 11px;
+  color: var(--text3);
+  font-family: var(--mono);
+  line-height: 2;
+}
+
+@media(max-width:768px) {
+  .wrap { padding: 0 16px; }
+  .header-right { display: none; }
+  .header-title { font-size: 26px; }
+  .stock-grid { grid-template-columns: 1fr; }
+  .buy-prices { grid-template-columns: 1fr; }
+  .buy-price-block:first-child { border-right: none; border-bottom: 1px solid var(--border-light); }
+  .sector-tab { padding: 10px 16px; font-size: 13px; }
+  .summary-strip { flex-wrap: wrap; }
+  .ss-item { min-width: 50%; }
+}
+</style>
+</head>
+<body>
+
+<div class="loading-screen" id="loadingScreen">
+  <div class="loading-title">红利股猎人</div>
+  <div class="loading-sub">正在加载历史数据与分析模型…</div>
+  <div class="loading-bar"><div class="loading-fill"></div></div>
+</div>
+
+<header>
+  <div class="header-inner wrap">
+    <div class="header-left">
+      <div class="header-eyebrow">// Dividend Hunter · 中国高股息分析系统</div>
+      <h1 class="header-title">红利股 <em>猎人</em></h1>
+      <div class="header-subtitle">A股 + 港股H股 · 历史最优买入价分析 · 实时股息率监控</div>
+    </div>
+    <div class="header-right">
+      <div class="stat-block">
+        <span class="stat-n" id="hdrStocks">15</span>
+        <span class="stat-l">只股票</span>
+      </div>
+      <div class="stat-block">
+        <span class="stat-n" id="hdrSectors">4</span>
+        <span class="stat-l">个板块</span>
+      </div>
+      <div class="stat-block">
+        <span class="stat-n" id="hdrYears">10</span>
+        <span class="stat-l">年历史</span>
+      </div>
+      <div class="stat-block">
+        <span class="stat-n" id="hdrBuy">—</span>
+        <span class="stat-l">建议买入</span>
+      </div>
+    </div>
+  </div>
+  <div class="header-decoration"></div>
+</header>
+
+<div class="algo-bar">
+  <div class="wrap">
+    <div class="algo-inner">
+      <span class="algo-label">核心算法</span>
+      <div class="algo-steps">
+        <span class="algo-step">① 历史买入价 = <strong>每年最低价</strong></span>
+        <span class="algo-arrow">→</span>
+        <span class="algo-step">② 股息率 = <strong>前5年均分红 ÷ 买入价</strong></span>
+        <span class="algo-arrow">→</span>
+        <span class="algo-step">③ 建议买入价 = <strong>股息率最高6年的均价</strong></span>
+        <span class="algo-arrow">→</span>
+        <span class="algo-step">④ 10年回报 = <strong>累计分红 + 资本增值</strong></span>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="wrap" style="padding-top:8px">
+
+  <div class="update-bar">
+    <span id="updateInfo">数据加载中…</span>
+    <span>数据来源：Yahoo Finance · 各公司年报 · 建议每日交易结束后刷新</span>
+  </div>
+
+  <div class="sector-nav">
+    <div class="sector-tabs" id="sectorTabs"></div>
+  </div>
+
+  <div id="summaryStrip" class="summary-strip" style="display:none">
+    <div class="ss-item">
+      <div class="ss-label">当前板块均股息率(A)</div>
+      <div class="ss-value" id="ssYieldA">—</div>
+      <div class="ss-sub">前5年均分红 / 近期最低价</div>
+    </div>
+    <div class="ss-item">
+      <div class="ss-label">当前板块均股息率(H)</div>
+      <div class="ss-value" id="ssYieldH">—</div>
+      <div class="ss-sub">港元分红 / 港股最低价</div>
+    </div>
+    <div class="ss-item">
+      <div class="ss-label">建议买入只数(A股)</div>
+      <div class="ss-value" id="ssBuyCount">—</div>
+      <div class="ss-sub">当前价 ≤ 建议买入价</div>
+    </div>
+    <div class="ss-item">
+      <div class="ss-label">历史最高股息率均值</div>
+      <div class="ss-value" id="ssMaxYield">—</div>
+      <div class="ss-sub">6个最佳买入年份均值</div>
+    </div>
+  </div>
+
+  <div class="stock-grid" id="stockGrid"></div>
+
+</div>
+
+<footer>
+  <div class="wrap">
+    数据仅供参考，不构成投资建议 · 历史股息率不代表未来表现 · 投资有风险，决策需谨慎<br>
+    数据来源：Yahoo Finance via Cloudflare Worker · 各公司公开年报 · 每个工作日 16:30 自动更新
+  </div>
+</footer>
+
+<script>
+// ═══════════════════════════════════════════════════
+//  数据加载
+// ═══════════════════════════════════════════════════
+const HKD_CNY = 0.92;
+let STOCKS_CFG = {}, PRICES_DB = {}, DIVS_DB = {};
+let charts = {};
+let activeSector = 'bank';
+
+async function loadData() {
+  try {
+    const [stocks, prices, divs] = await Promise.all([
+      fetch('config/stocks.json').then(r => r.json()),
+      fetch('data/prices.json').then(r => r.json()),
+      fetch('data/dividends.json').then(r => r.json()),
+    ]);
+    STOCKS_CFG = stocks;
+    PRICES_DB = prices.prices || {};
+    DIVS_DB = divs.banks || {};
+
+    document.getElementById('updateInfo').textContent =
+      `数据更新：${prices.meta?.last_updated || '未知'} · 共 ${Object.keys(PRICES_DB).length} 只股票`;
+
+    renderAll();
+    setTimeout(() => {
+      const ls = document.getElementById('loadingScreen');
+      ls.classList.add('fade');
+      setTimeout(() => ls.remove(), 500);
+    }, 800);
+  } catch(e) {
+    document.getElementById('loadingScreen').innerHTML =
+      `<div style="text-align:center;padding:32px">
+        <div style="font-family:var(--serif);font-size:24px;color:var(--ink);margin-bottom:12px">数据加载失败</div>
+        <div style="font-family:var(--mono);font-size:12px;color:var(--text3);margin-bottom:20px">${e.message}</div>
+        <div style="font-size:12px;color:var(--text2)">请确保 data/prices.json、data/dividends.json、config/stocks.json 已上传到仓库</div>
+      </div>`;
+  }
+}
+
+// ═══════════════════════════════════════════════════
+//  核心算法
+// ═══════════════════════════════════════════════════
+function analyzeStock(key) {
+  const priceData = PRICES_DB[key] || {};
+  const divData = DIVS_DB[key] || {};
+  const aDiv = divData.dividends || {};
+  const hDiv = divData.h_dividends || {};
+
+  // 获取所有年度数据，排序
+  const annualKeys = Object.keys(priceData)
+    .filter(k => k.endsWith('-annual'))
+    .sort();
+
+  const rows = [];
+
+  for (const ak of annualKeys) {
+    const year = ak.replace('-annual', '');
+    const yearNum = parseInt(year);
+    if (year === '2026') continue; // 当年未完整，跳过用于分析
+
+    const entry = priceData[ak];
+    const aP = entry?.a_low ?? null;
+    const hP = entry?.h_low ?? null;
+
+    // 前5年平均分红（A股，跳过2025不完整年）
+    const prevDivs = [];
+    for (let y = yearNum - 5; y < yearNum; y++) {
+      const d = aDiv[y.toString()];
+      if (d !== undefined && d !== null) prevDivs.push(d);
+    }
+    const avgDiv = prevDivs.length > 0 ? prevDivs.reduce((s,v)=>s+v,0)/prevDivs.length : null;
+
+    // 前5年平均H股分红（港元）
+    const prevHDivs = [];
+    for (let y = yearNum - 5; y < yearNum; y++) {
+      const d = hDiv[y.toString()];
+      if (d !== undefined && d !== null) prevHDivs.push(d);
+    }
+    const avgHDiv = prevHDivs.length > 0 ? prevHDivs.reduce((s,v)=>s+v,0)/prevHDivs.length : null;
+
+    // 股息率
+    const yA = (aP && avgDiv && aP > 0) ? (avgDiv / aP * 100) : null;
+    const yH = (hP && avgHDiv && hP > 0) ? (avgHDiv / hP * 100) : null;
+
+    // 10年回报（用实际分红累加）
+    let cumDivA = 0, cumDivH = 0;
+    const endYear = yearNum + 10;
+    for (let y = yearNum + 1; y <= endYear; y++) {
+      const da = aDiv[y.toString()];
+      if (da !== undefined && da !== null) cumDivA += da;
+      const dh = hDiv[y.toString()];
+      if (dh !== undefined && dh !== null) cumDivH += dh;
+    }
+    const endKey = endYear + '-annual';
+    const endEntry = priceData[endKey];
+    const retA = (aP && endEntry?.a_low && cumDivA > 0)
+      ? ((cumDivA + endEntry.a_low - aP) / aP * 100) : null;
+    const retH = (hP && endEntry?.h_low && cumDivH > 0)
+      ? ((cumDivH + endEntry.h_low - hP) / hP * 100) : null;
+
+    rows.push({ year, yearNum, aP, hP, avgDiv, avgHDiv, yA, yH, retA, retH });
+  }
+
+  // 建议买入价 = 股息率最高6年的平均买入价
+  const validA = rows.filter(r => r.yA !== null).sort((a,b) => b.yA - a.yA);
+  const top6A = validA.slice(0, Math.min(6, validA.length));
+  const suggestA = top6A.length > 0 ? top6A.reduce((s,r)=>s+r.aP,0)/top6A.length : null;
+  const suggestYA = top6A.length > 0 ? top6A.reduce((s,r)=>s+r.yA,0)/top6A.length : null;
+
+  const validH = rows.filter(r => r.yH !== null).sort((a,b) => b.yH - a.yH);
+  const top6H = validH.slice(0, Math.min(6, validH.length));
+  const suggestH = top6H.length > 0 ? top6H.reduce((s,r)=>s+r.hP,0)/top6H.length : null;
+  const suggestYH = top6H.length > 0 ? top6H.reduce((s,r)=>s+r.yH,0)/top6H.length : null;
+
+  // 当前参考价（2026年最低价，即今年迄今低位）
+  const cur2026 = priceData['2026-annual'];
+  const curA = cur2026?.a_low ?? null;
+  const curH = cur2026?.h_low ?? null;
+
+  // 当前股息率（用2024年完整分红，跳过2025不完整）
+  const lastDiv = aDiv['2024'] ?? null;
+  const lastHDiv = hDiv['2024'] ?? null;
+  const curYA = (curA && lastDiv && curA > 0) ? (lastDiv / curA * 100) : null;
+  const curYH = (curH && lastHDiv && curH > 0) ? (lastHDiv / curH * 100) : null;
+
+  // 买入判断
+  let verdictA = 'nodata', verdictH = 'nodata';
+  if (suggestA && curA) {
+    if (curA <= suggestA * 1.05) verdictA = 'buy';
+    else if (curA <= suggestA * 1.20) verdictA = 'wait';
+    else verdictA = 'avoid';
+  }
+  if (suggestH && curH) {
+    if (curH <= suggestH * 1.05) verdictH = 'buy';
+    else if (curH <= suggestH * 1.20) verdictH = 'wait';
+    else verdictH = 'avoid';
+  }
+
+  const top6YearsA = new Set(top6A.map(r => r.year));
+  const top6YearsH = new Set(top6H.map(r => r.year));
+
+  return {
+    rows, suggestA, suggestH, suggestYA, suggestYH,
+    curA, curH, curYA, curYH,
+    verdictA, verdictH, top6YearsA, top6YearsH
+  };
+}
+
+// ═══════════════════════════════════════════════════
+//  渲染
+// ═══════════════════════════════════════════════════
+function renderAll() {
+  renderSectorTabs();
+  renderSector(activeSector);
+}
+
+function renderSectorTabs() {
+  const sectors = STOCKS_CFG.sectors || {};
+  const tabs = document.getElementById('sectorTabs');
+  tabs.innerHTML = '';
+  Object.entries(sectors).forEach(([key, s]) => {
+    const n = Object.keys(s.stocks || {}).length;
+    const tab = document.createElement('div');
+    tab.className = 'sector-tab' + (key === activeSector ? ' active' : '');
+    tab.innerHTML = `<span class="tab-icon">${s.icon}</span> ${s.name} <span class="tab-count">${n}</span>`;
+    tab.onclick = () => {
+      activeSector = key;
+      renderSectorTabs();
+      renderSector(key);
+    };
+    tabs.appendChild(tab);
+  });
+}
+
+function renderSector(sectorKey) {
+  const sector = STOCKS_CFG.sectors?.[sectorKey];
+  if (!sector) return;
+  const grid = document.getElementById('stockGrid');
+  grid.innerHTML = '';
+
+  // Destroy existing charts
+  Object.values(charts).forEach(c => c.destroy());
+  charts = {};
+
+  const stocks = sector.stocks || {};
+  let buyCount = 0, totalYA = 0, totalYH = 0, totalSuggestY = 0, validN = 0, validNH = 0, suggestN = 0;
+
+  Object.entries(stocks).forEach(([key, stock]) => {
+    const res = analyzeStock(key);
+    if (res.verdictA === 'buy') buyCount++;
+    if (res.curYA) { totalYA += res.curYA; validN++; }
+    if (res.curYH) { totalYH += res.curYH; validNH++; }
+    if (res.suggestYA) { totalSuggestY += res.suggestYA; suggestN++; }
+
+    const card = buildCard(key, stock, res);
+    grid.appendChild(card);
+  });
+
+  // Summary strip
+  const strip = document.getElementById('summaryStrip');
+  strip.style.display = 'flex';
+  document.getElementById('ssYieldA').textContent = validN > 0 ? (totalYA/validN).toFixed(2) + '%' : '—';
+  document.getElementById('ssYieldH').textContent = validNH > 0 ? (totalYH/validNH).toFixed(2) + '%' : '—';
+  document.getElementById('ssBuyCount').textContent = buyCount + ' / ' + Object.keys(stocks).length;
+  document.getElementById('ssMaxYield').textContent = suggestN > 0 ? (totalSuggestY/suggestN).toFixed(2) + '%' : '—';
+
+  // Header buy count (across all sectors)
+  const allStocks = Object.values(STOCKS_CFG.sectors || {}).flatMap(s => Object.keys(s.stocks || {}));
+  const allBuy = allStocks.filter(k => {
+    const r = analyzeStock(k);
+    return r.verdictA === 'buy';
+  }).length;
+  document.getElementById('hdrBuy').textContent = allBuy;
+}
+
+function buildCard(key, stock, res) {
+  const card = document.createElement('div');
+  card.className = 'stock-card';
+  card.dataset.key = key;
+
+  const vTextA = res.verdictA === 'buy' ? '✦ 建议买入' : res.verdictA === 'wait' ? '▷ 观望' : res.verdictA === 'avoid' ? '— 偏贵' : '数据不足';
+  const divData = DIVS_DB[key] || {};
+
+  // Gap text
+  function gapHtml(cur, suggest, isH) {
+    if (!cur || !suggest) return '<span class="bp-gap" style="background:var(--cream);color:var(--text3)">— 暂无价格</span>';
+    const gap = (cur - suggest) / suggest * 100;
+    const unit = isH ? 'HK$' : '¥';
+    if (gap <= 5) return `<span class="bp-gap below">↓ ${Math.abs(gap).toFixed(1)}% 已达标</span>`;
+    if (gap <= 20) return `<span class="bp-gap near">需再跌 ${gap.toFixed(1)}%（约${unit}${(cur - suggest).toFixed(2)}）</span>`;
+    return `<span class="bp-gap above">高于目标 ${gap.toFixed(1)}%（约${unit}${(cur - suggest).toFixed(2)}）</span>`;
+  }
+
+  const chartId = 'chart_' + key;
+
+  card.innerHTML = `
+    <div class="card-header">
+      <div class="card-name-block">
+        <div class="card-name">${stock.name}</div>
+        <div class="card-tickers">${stock.ticker_a} · ${stock.ticker_h}</div>
+      </div>
+      <div class="verdict-badge ${res.verdictA}">${vTextA}</div>
+    </div>
+
+    <div class="buy-prices">
+      <div class="buy-price-block">
+        <div class="bp-label">A股建议买入价</div>
+        <div class="bp-price ${res.suggestA ? '' : 'na'}">${res.suggestA ? '¥' + res.suggestA.toFixed(2) : '数据不足'}</div>
+        <div class="bp-yield">目标股息率 <strong>${res.suggestYA ? res.suggestYA.toFixed(2) + '%' : '—'}</strong></div>
+        <div class="bp-yield">2026年低 ¥${res.curA ? res.curA.toFixed(2) : '—'} · 现股息率 <strong style="color:var(--green-light)">${res.curYA ? res.curYA.toFixed(2) + '%' : '—'}</strong></div>
+        ${gapHtml(res.curA, res.suggestA, false)}
+      </div>
+      <div class="buy-price-block">
+        <div class="bp-label">H股建议买入价</div>
+        <div class="bp-price cyn ${res.suggestH ? '' : 'na'}" style="color:${res.suggestH ? '#1a6b8a' : ''}">${res.suggestH ? 'HK$' + res.suggestH.toFixed(2) : '数据不足'}</div>
+        <div class="bp-yield">目标股息率 <strong>${res.suggestYH ? res.suggestYH.toFixed(2) + '%' : '—'}</strong></div>
+        <div class="bp-yield">2026年低 HK$${res.curH ? res.curH.toFixed(2) : '—'} · 现股息率 <strong style="color:var(--green-light)">${res.curYH ? res.curYH.toFixed(2) + '%' : '—'}</strong></div>
+        ${gapHtml(res.curH, res.suggestH, true)}
+      </div>
+    </div>
+
+    <div class="card-chart">
+      <div class="chart-title">历年股息率走势（★ = 建议买入年份）</div>
+      <div class="chart-wrap"><canvas id="${chartId}"></canvas></div>
+    </div>
+
+    <div class="card-toggle" onclick="toggleTable(this, '${key}')">
+      <span class="toggle-arrow">▼</span>
+      <span>展开历年详细数据</span>
+    </div>
+    <div class="hist-table-wrap" id="table_${key}">
+      ${buildHistTable(res)}
+    </div>
+  `;
+
+  // Draw chart after DOM insertion
+  setTimeout(() => drawChart(chartId, res, stock), 50);
+  return card;
+}
+
+function buildHistTable(res) {
+  if (!res.rows.length) return '<div style="padding:16px;text-align:center;color:var(--text3);font-family:var(--mono);font-size:12px">暂无历史数据</div>';
+
+  let html = `<table class="hist-table">
+    <thead>
+      <tr>
+        <th>年份</th>
+        <th>A股最低价</th>
+        <th>前5年均分红</th>
+        <th>A股股息率</th>
+        <th>H股最低价</th>
+        <th>H股股息率</th>
+        <th>10年总回报(A)</th>
+      </tr>
+    </thead><tbody>`;
+
+  for (const r of [...res.rows].sort((a,b) => a.yearNum - b.yearNum)) {
+    const isTopA = res.top6YearsA.has(r.year);
+    const yAClass = r.yA > 6 ? 'yield-hi' : r.yA > 4 ? 'yield-mid' : '';
+    const yHClass = r.yH > 7 ? 'yield-hi' : r.yH > 5 ? 'yield-mid' : '';
+    const retClass = r.retA > 100 ? 'ret-good' : r.retA > 50 ? 'ret-ok' : 'ret-hold';
+
+    html += `<tr class="${isTopA ? 'top-year' : ''}">
+      <td>${r.year}</td>
+      <td>${r.aP ? '¥' + r.aP.toFixed(2) : '—'}</td>
+      <td>${r.avgDiv ? '¥' + r.avgDiv.toFixed(4) : '—'}</td>
+      <td class="${yAClass}">${r.yA ? r.yA.toFixed(2) + '%' : '—'}</td>
+      <td>${r.hP ? 'HK$' + r.hP.toFixed(2) : '—'}</td>
+      <td class="${yHClass}">${r.yH ? r.yH.toFixed(2) + '%' : '—'}</td>
+      <td class="${r.retA ? retClass : 'ret-hold'}">${r.retA !== null ? r.retA.toFixed(1) + '%' : '持有中'}</td>
+    </tr>`;
+  }
+  html += '</tbody></table>';
+  return html;
+}
+
+function drawChart(canvasId, res, stock) {
+  const canvas = document.getElementById(canvasId);
+  if (!canvas) return;
+  if (charts[canvasId]) charts[canvasId].destroy();
+
+  const sorted = [...res.rows].sort((a,b) => a.yearNum - b.yearNum);
+  const labels = sorted.map(r => r.year);
+  const yA = sorted.map(r => r.yA ? +r.yA.toFixed(2) : null);
+  const yH = sorted.map(r => r.yH ? +r.yH.toFixed(2) : null);
+
+  charts[canvasId] = new Chart(canvas.getContext('2d'), {
+    type: 'line',
+    data: {
+      labels,
+      datasets: [
+        {
+          label: 'A股股息率',
+          data: yA,
+          borderColor: '#b8860b',
+          backgroundColor: 'rgba(184,134,11,0.06)',
+          tension: 0.3,
+          fill: true,
+          pointRadius: sorted.map(r => res.top6YearsA.has(r.year) ? 6 : 3),
+          pointBackgroundColor: sorted.map(r => res.top6YearsA.has(r.year) ? '#b8860b' : 'rgba(184,134,11,0.5)'),
+          pointBorderColor: sorted.map(r => res.top6YearsA.has(r.year) ? '#b8860b' : 'transparent'),
+          borderWidth: 2,
+          spanGaps: true,
+        },
+        {
+          label: 'H股股息率',
+          data: yH,
+          borderColor: '#1a6b8a',
+          backgroundColor: 'rgba(26,107,138,0.04)',
+          tension: 0.3,
+          fill: false,
+          pointRadius: 2,
+          borderWidth: 1.5,
+          borderDash: [4, 2],
+          spanGaps: true,
+        },
+        {
+          label: '建议买入线',
+          data: labels.map(() => res.suggestYA ? +res.suggestYA.toFixed(2) : null),
+          borderColor: 'rgba(155,34,38,0.4)',
+          borderDash: [6,3],
+          borderWidth: 1.5,
+          pointRadius: 0,
+          fill: false,
+          spanGaps: true,
+        }
+      ]
+    },
+    options: {
+      responsive: true,
+      maintainAspectRatio: false,
+      plugins: {
+        legend: { display: false },
+        tooltip: {
+          backgroundColor: 'rgba(26,18,8,0.92)',
+          titleColor: '#f5f0e8',
+          bodyColor: '#d4c4a8',
+          callbacks: {
+            label: c => c.dataset.label + ': ' + (c.parsed.y !== null ? c.parsed.y + '%' : '—')
+          }
+        }
+      },
+      scales: {
+        x: {
+          ticks: { color: '#a08c78', font: { size: 10, family: 'DM Mono' } },
+          grid: { color: 'rgba(212,196,168,0.3)' }
+        },
+        y: {
+          ticks: { color: '#a08c78', font: { size: 10, family: 'DM Mono' }, callback: v => v + '%' },
+          grid: { color: 'rgba(212,196,168,0.3)' }
+        }
+      }
+    }
+  });
+}
+
+function toggleTable(el, key) {
+  el.classList.toggle('open');
+  const tw = document.getElementById('table_' + key);
+  tw.classList.toggle('show');
+}
+
+// Start
+loadData();
+</script>
+</body>
+</html>
