@@ -1,12 +1,8 @@
-"""
-每日股价抓取 — 从 stocks.json 读取股票配置
-数据源：A股 → 新浪财经，H股 → Yahoo Finance
-"""
 import json, os, time, urllib.request
 from datetime import datetime, timezone, timedelta
 
-PRICES_FILE  = "data/prices.json"
-STOCKS_FILE  = "config/stocks.json"
+PRICES_FILE = "data/prices.json"
+STOCKS_FILE = "config/stocks.json"
 BJT = timezone(timedelta(hours=8))
 
 def today_str():
@@ -24,16 +20,13 @@ def fetch_url(url, headers=None, timeout=10):
         return None
 
 def load_json(path, default):
-    if not os.path.exists(path):
-        return default
+    if not os.path.exists(path): return default
     try:
         content = open(path, "r", encoding="utf-8").read().strip()
         return json.loads(content) if content else default
-    except Exception:
-        return default
+    except Exception: return default
 
 def load_all_stocks():
-    """从 stocks.json 读出所有股票，返回 {key: stock_info} 平铺字典"""
     cfg = load_json(STOCKS_FILE, {})
     stocks = {}
     for sector_key, sector in cfg.get("sectors", {}).items():
@@ -42,6 +35,7 @@ def load_all_stocks():
     return stocks
 
 def fetch_a_prices(stocks):
+    """一次请求所有A股，新浪支持批量"""
     tickers = ",".join(s["ticker_a"] for s in stocks.values())
     url = f"https://hq.sinajs.cn/list={tickers}"
     headers = {"Referer": "https://finance.sina.com.cn", "User-Agent": "Mozilla/5.0"}
@@ -86,7 +80,7 @@ def main():
     print(f"\n{'='*55}\n  每日股价抓取 {today}\n{'='*55}")
 
     stocks = load_all_stocks()
-    print(f"  共 {len(stocks)} 只股票，来自 stocks.json")
+    print(f"  共 {len(stocks)} 只股票")
 
     os.makedirs("data", exist_ok=True)
     db = load_json(PRICES_FILE, {"meta": {"source": "新浪财经+Yahoo Finance"}, "prices": {}})
@@ -94,18 +88,8 @@ def main():
         if key not in db["prices"]:
             db["prices"][key] = {}
 
-    # 按板块分批抓 A股（新浪一次最多50个）
-    from itertools import islice
-    def chunks(d, n):
-        it = iter(d)
-        while chunk := dict(islice(it, n)):
-            yield chunk
-
     print("\n[A股] 新浪财经...")
-    a_prices = {}
-    for chunk in chunks(stocks, 40):
-        a_prices.update(fetch_a_prices(chunk))
-        time.sleep(0.3)
+    a_prices = fetch_a_prices(stocks)
 
     print("\n[H股] Yahoo Finance...")
     h_prices = {}
