@@ -1,0 +1,41 @@
+name: 每日抓取银行股价 + 每月更新分红
+
+on:
+  schedule:
+    # 每个工作日北京时间16:30（UTC 08:30）收盘后抓价格
+    - cron: '30 8 * * 1-5'
+    # 每月1日北京时间10:00更新分红数据
+    - cron: '0 2 1 * *'
+  workflow_dispatch:  # 支持手动触发
+
+jobs:
+  fetch:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: 检出仓库
+        uses: actions/checkout@v4
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: 设置 Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: 抓取每日股价
+        if: github.event.schedule == '30 8 * * 1-5' || github.event_name == 'workflow_dispatch'
+        run: python fetch_prices.py
+
+      - name: 更新分红数据
+        if: github.event.schedule == '0 2 1 * *' || github.event_name == 'workflow_dispatch'
+        run: python fetch_dividends.py
+
+      - name: 提交数据到仓库
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add prices.json dividends.json
+          # 只有文件有变化才提交
+          git diff --staged --quiet || git commit -m "📊 自动更新: $(date '+%Y-%m-%d')"
+          git push
