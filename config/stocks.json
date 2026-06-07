@@ -1,0 +1,176 @@
+{
+  "meta": {
+    "description": "高股息股票配置文件，新增股票只需在对应板块 stocks 里加一条记录",
+    "last_updated": "2026-06-07",
+    "how_to_add": "在对应 sector 的 stocks 对象里新增一个 key，填写 name/ticker_a/ticker_h/code_a/market_a/code_h 即可"
+  },
+  "sectors": {
+    "bank": {
+      "name": "银行股",
+      "name_en": "Banks",
+      "color": "#c8a96e",
+      "icon": "🏦",
+      "stocks": {
+        "icbc": {
+          "name": "工商银行",
+          "name_en": "ICBC",
+          "ticker_a": "sh601398",
+          "ticker_h": "1398.HK",
+          "code_a": "601398",
+          "market_a": "1",
+          "code_h": "01398"
+        },
+        "ccb": {
+          "name": "建设银行",
+          "name_en": "CCB",
+          "ticker_a": "sh601939",
+          "ticker_h": "939.HK",
+          "code_a": "601939",
+          "market_a": "1",
+          "code_h": "00939"
+        },
+        "abc": {
+          "name": "农业银行",
+          "name_en": "ABC",
+          "ticker_a": "sh601288",
+          "ticker_h": "1288.HK",
+          "code_a": "601288",
+          "market_a": "1",
+          "code_h": "01288"
+        },
+        "boc": {
+          "name": "中国银行",
+          "name_en": "BOC",
+          "ticker_a": "sh601988",
+          "ticker_h": "3988.HK",
+          "code_a": "601988",
+          "market_a": "1",
+          "code_h": "03988"
+        },
+        "comm": {
+          "name": "交通银行",
+          "name_en": "BOCOM",
+          "ticker_a": "sh601328",
+          "ticker_h": "3328.HK",
+          "code_a": "601328",
+          "market_a": "1",
+          "code_h": "03328"
+        },
+        "psbc": {
+          "name": "邮储银行",
+          "name_en": "PSBC",
+          "ticker_a": "sh601658",
+          "ticker_h": "1658.HK",
+          "code_a": "601658",
+          "market_a": "1",
+          "code_h": "01658"
+        }
+      }
+    },
+    "energy": {
+      "name": "能源股",
+      "name_en": "Energy",
+      "color": "#e88c4a",
+      "icon": "⛽",
+      "stocks": {
+        "petrochina": {
+          "name": "中国石油",
+          "name_en": "PetroChina",
+          "ticker_a": "sh601857",
+          "ticker_h": "857.HK",
+          "code_a": "601857",
+          "market_a": "1",
+          "code_h": "00857"
+        },
+        "sinopec": {
+          "name": "中国石化",
+          "name_en": "Sinopec",
+          "ticker_a": "sh600028",
+          "ticker_h": "386.HK",
+          "code_a": "600028",
+          "market_a": "1",
+          "code_h": "00386"
+        },
+        "cnooc": {
+          "name": "中国海油",
+          "name_en": "CNOOC",
+          "ticker_a": "sh600938",
+          "ticker_h": "883.HK",
+          "code_a": "600938",
+          "market_a": "1",
+          "code_h": "00883"
+        }
+      }
+    },
+    "telecom": {
+      "name": "电信股",
+      "name_en": "Telecom",
+      "color": "#6e9ec8",
+      "icon": "📡",
+      "stocks": {
+        "cmobile": {
+          "name": "中国移动",
+          "name_en": "China Mobile",
+          "ticker_a": "sh600941",
+          "ticker_h": "941.HK",
+          "code_a": "600941",
+          "market_a": "1",
+          "code_h": "00941"
+        },
+        "cunicom": {
+          "name": "中国联通",
+          "name_en": "China Unicom",
+          "ticker_a": "sh600050",
+          "ticker_h": "762.HK",
+          "code_a": "600050",
+          "market_a": "1",
+          "code_h": "00762"
+        },
+        "ctelecom": {
+          "name": "中国电信",
+          "name_en": "China Telecom",
+          "ticker_a": "sh601728",
+          "ticker_h": "728.HK",
+          "code_a": "601728",
+          "market_a": "1",
+          "code_h": "00728"
+        }
+      }
+    },
+    "power": {
+      "name": "电力股",
+      "name_en": "Power",
+      "color": "#a96ec8",
+      "icon": "⚡",
+      "stocks": {
+        "huaneng": {
+          "name": "华能国际",
+          "name_en": "Huaneng Power",
+          "ticker_a": "sh600011",
+          "ticker_h": "902.HK",
+          "code_a": "600011",
+          "market_a": "1",
+          "code_h": "00902"
+        },
+        "datang": {
+          "name": "大唐发电",
+          "name_en": "Datang Power",
+          "ticker_a": "sh601991",
+          "ticker_h": "991.HK",
+          "code_a": "601991",
+          "market_a": "1",
+          "code_h": "00991"
+        },
+        "huadian": {
+          "name": "华电国际",
+          "name_en": "Huadian Power",
+          "ticker_a": "sh600027",
+          "ticker_h": "1071.HK",
+          "code_a": "600027",
+          "market_a": "1",
+          "code_h": "01071"
+        }
+      }
+    }
+  }
+}
