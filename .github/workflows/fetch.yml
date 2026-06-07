@@ -1,10 +1,19 @@
-name: 每日抓取银行股价
+name: 每日抓取股价
 
 on:
   schedule:
     - cron: '30 8 * * 1-5'
     - cron: '0 2 1 * *'
   workflow_dispatch:
+    inputs:
+      mode:
+        description: '运行模式: daily=每日价格 | history=历史补录（只跑一次）'
+        required: true
+        default: 'daily'
+        type: choice
+        options:
+          - daily
+          - history
 
 jobs:
   fetch:
@@ -16,16 +25,22 @@ jobs:
         with:
           python-version: '3.12'
 
-      - name: 抓取股价
+      - name: 每日股价
+        if: github.event.inputs.mode == 'daily' || github.event.schedule == '30 8 * * 1-5'
         run: python fetch_prices.py
 
-      - name: 更新分红
+      - name: 每月分红
+        if: github.event.inputs.mode == 'daily' || github.event.schedule == '0 2 1 * *'
         run: python fetch_dividends.py
+
+      - name: 历史补录（一次性）
+        if: github.event.inputs.mode == 'history'
+        run: python fetch_history.py
 
       - name: 提交数据
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
-          git add prices.json dividends.json
+          git add data/prices.json data/dividends.json
           git diff --staged --quiet || git commit -m "📊 自动更新: $(date '+%Y-%m-%d')"
           git push
