@@ -1,63 +1,51 @@
+"""
+分红数据抓取 — 从 stocks.json 读取股票配置
+数据源：巨潮资讯（备用：新浪财经）
+"""
 import json, os, re, time, urllib.request
 from datetime import datetime, timezone, timedelta
 
-BANKS = {
-    "icbc":  {"name": "工商银行", "code": "601398"},
-    "ccb":   {"name": "建设银行", "code": "601939"},
-    "abc":   {"name": "农业银行", "code": "601288"},
-    "boc":   {"name": "中国银行", "code": "601988"},
-    "comm":  {"name": "交通银行", "code": "601328"},
-    "psbc":  {"name": "邮储银行", "code": "601658"},
-}
-DIVIDENDS_FILE = "dividends.json"
+DIVIDENDS_FILE = "data/dividends.json"
+STOCKS_FILE    = "config/stocks.json"
 BJT = timezone(timedelta(hours=8))
 
 def fetch_url(url, headers=None, timeout=15):
-    req = urllib.request.Request(url, headers=headers or {})
+    req = urllib.request.Request(url, headers=headers or {"User-Agent": "Mozilla/5.0"})
     try:
         with urllib.request.urlopen(req, timeout=timeout) as r:
             return r.read().decode("utf-8", errors="replace")
     except Exception as e:
-        print(f"  请求失败: {e}")
+        print(f"    请求失败: {e}")
         return None
 
-def load_db():
-    default = {
-        "meta": {
-            "description": "六大国有银行历年每股分红（人民币/股，税前）",
-            "source": "巨潮资讯",
-            "last_updated": ""
-        },
-        "banks": {}
-    }
-    if not os.path.exists(DIVIDENDS_FILE):
+def load_json(path, default):
+    if not os.path.exists(path):
         return default
     try:
-        content = open(DIVIDENDS_FILE, "r", encoding="utf-8").read().strip()
-        if not content:
-            return default
-        return json.loads(content)
+        content = open(path, "r", encoding="utf-8").read().strip()
+        return json.loads(content) if content else default
     except Exception:
-        print("dividends.json 读取失败，重新初始化")
         return default
 
-def fetch_dividends_cninfo(code):
+def load_all_stocks():
+    cfg = load_json(STOCKS_FILE, {})
+    stocks = {}
+    for sector_key, sector in cfg.get("sectors", {}).items():
+        for key, info in sector.get("stocks", {}).items():
+            stocks[key] = {**info, "sector": sector_key}
+    return stocks
+
+def fetch_cninfo(code):
     url = f"http://www.cninfo.com.cn/data20/financialData/dividendList?scode={code}&pageNum=1&pageSize=50"
-    headers = {
-        "User-Agent": "Mozilla/5.0",
-        "Referer": "http://www.cninfo.com.cn/",
-    }
+    headers = {"User-Agent": "Mozilla/5.0", "Referer": "http://www.cninfo.com.cn/"}
     text = fetch_url(url, headers)
-    if not text:
-        return {}
+    if not text: return {}
     try:
-        data = json.loads(text)
-        records = data.get("data", {}).get("dividendList", [])
+        records = json.loads(text).get("data", {}).get("dividendList", [])
         result = {}
         for rec in records:
             ex_date = rec.get("exDividendDate", "") or rec.get("recordDate", "")
-            if not ex_date:
-                continue
+            if not ex_date: continue
             year = ex_date[:4]
             div = rec.get("cashDividendRatio", 0)
             if div and float(div) > 0:
@@ -65,47 +53,50 @@ def fetch_dividends_cninfo(code):
                 result[year] = round(result.get(year, 0) + per_share, 4)
         return result
     except Exception as e:
-        print(f"  巨潮解析失败: {e}")
+        print(f"    巨潮解析失败: {e}")
         return {}
 
-def fetch_dividends_sina(code):
+def fetch_sina(code):
     url = f"https://money.finance.sina.com.cn/corp/go.php/vISSUE_ShareBonus/stockid/{code}.phtml"
-    headers = {"User-Agent": "Mozilla/5.0", "Referer": "https://finance.sina.com.cn"}
-    text = fetch_url(url, headers)
-    if not text:
-        return {}
+    text = fetch_url(url, {"User-Agent": "Mozilla/5.0", "Referer": "https://finance.sina.com.cn"})
+    if not text: return {}
     result = {}
-    pattern = r'(\d{4})-\d{2}-\d{2}.*?派(\d+\.?\d*)元'
-    for year, amount in re.findall(pattern, text):
+    for year, amount in re.findall(r'(\d{4})-\d{2}-\d{2}.*?派(\d+\.?\d*)元', text):
         per_share = round(float(amount) / 10, 4)
         result[year] = round(result.get(year, 0) + per_share, 4)
     return result
 
 def main():
     today = datetime.now(BJT).strftime("%Y-%m-%d")
-    print(f"\n{'='*50}\n  抓取分红数据: {today}\n{'='*50}")
-    db = load_db()
+    print(f"\n{'='*55}\n  分红数据更新 {today}\n{'='*55}")
 
-    for key, bank in BANKS.items():
-        print(f"\n[{bank['name']}] 抓取中...")
-        divs = fetch_dividends_cninfo(bank["code"])
+    stocks = load_all_stocks()
+    os.makedirs("data", exist_ok=True)
+    db = load_json(DIVIDENDS_FILE, {
+        "meta": {"description": "高股息股票历年每股分红", "source": "巨潮资讯", "last_updated": ""},
+        "banks": {}
+    })
+
+    for key, stock in stocks.items():
+        print(f"\n[{stock['name']}]")
+        divs = fetch_cninfo(stock["code_a"])
         if not divs:
-            print("  巨潮失败，尝试新浪备用...")
-            divs = fetch_dividends_sina(bank["code"])
+            print("    巨潮失败，尝试新浪...")
+            divs = fetch_sina(stock["code_a"])
         if divs:
-            print(f"  获取到 {len(divs)} 年数据: {divs}")
+            print(f"    ✓ {len(divs)} 年分红: {divs}")
             if key not in db["banks"]:
-                db["banks"][key] = {"name": bank["name"], "code": bank["code"], "dividends": {}}
+                db["banks"][key] = {"name": stock["name"], "sector": stock["sector"], "dividends": {}}
             db["banks"][key]["dividends"].update(divs)
             db["banks"][key]["dividends"] = dict(sorted(db["banks"][key]["dividends"].items()))
         else:
-            print(f"  未能获取 {bank['name']} 分红数据")
+            print(f"    ✗ 获取失败")
         time.sleep(1)
 
     db["meta"]["last_updated"] = today
     with open(DIVIDENDS_FILE, "w", encoding="utf-8") as f:
         json.dump(db, f, ensure_ascii=False, indent=2)
-    print(f"\n完成，已写入 {DIVIDENDS_FILE}")
+    print(f"\n✓ 已写入 {DIVIDENDS_FILE}")
 
 if __name__ == "__main__":
     main()
